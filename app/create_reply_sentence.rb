@@ -1,19 +1,15 @@
-require './delay_infomation_extractor.rb'
-require './user_local_api'
+# frozen_string_literal: true
 
-# CreateReplySentenceクラスは、返信文作成を実装するクラスです
-#
-# Sample
-#  reply_info = CreateReplySentence.new
-#  p reply_info.reply('おはよう')
-#  => おはようございます！！
+require 'http'
+require 'json'
+
 class CreateReplySentence
-  attr_accessor :result
+  USER_LOCAL_URL = 'https://chatbot-api.userlocal.jp/api/chat'.freeze
+  API_KEY        = ENV['USER_LOCAL_API_KEY'].freeze
 
   # when 'if' or 'elsif', call methods,
   # 'else' then call a "LocalHost" API response.
   def reply(word: :message)
-
     # DelayInfomationExtractor
     if word.include?('電車')
       DelayInfomationExtractor.new.search_for_delaying_railway(word)
@@ -22,7 +18,16 @@ class CreateReplySentence
 
     # UserLocalAPI
     else
-      UserLocalAPI.new.get_message(msg: word)
+      call_user_local_api(msg: word)
     end
+  end
+
+  # Call chat bot API
+  # https://www.userlocal.jp/
+  def call_user_local_api(msg:)
+    uri = "#{USER_LOCAL_URL}?key=#{API_KEY}&message=#{msg}"
+    response = HTTP.post(uri)
+    rc = JSON.parse(response.body)
+    rc['result']
   end
 end
