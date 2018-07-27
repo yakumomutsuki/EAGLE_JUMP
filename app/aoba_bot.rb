@@ -40,6 +40,14 @@ EM.run do
         }.to_json)
       end
     end
+
+    if word =~ /バルス/
+      ws.on :close do
+        p [:close, event.code]
+        ws = nil
+        EM.stop
+      end
+    end
   end
 
   # When Connection is closed
