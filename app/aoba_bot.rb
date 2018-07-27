@@ -41,7 +41,7 @@ EM.run do
       end
     end
 
-    if word =~ /バルス/
+    if data['text'] =~ /バルス/
       ws.on :close do
         p [:close, event.code]
         ws = nil
