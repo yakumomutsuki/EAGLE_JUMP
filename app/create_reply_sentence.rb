@@ -4,8 +4,8 @@ require 'http'
 require 'json'
 
 class CreateReplySentence
-  USER_LOCAL_URL = 'https://chatbot-api.userlocal.jp/api/chat'.freeze
-  API_KEY        = ENV['USER_LOCAL_API_KEY'].freeze
+  USER_LOCAL_URL = 'https://chatbot-api.userlocal.jp/api/chat'
+  API_KEY        = ENV['USER_LOCAL_API_KEY']
 
   # when 'if' or 'elsif', call methods,
   # 'else' then call a "LocalHost" API response.
@@ -18,8 +18,13 @@ class CreateReplySentence
 
     # UserLocalAPI
     else
+      word = refine_msg(msg: word)
       call_user_local_api(msg: word)
     end
+  end
+
+  def refine_msg(msg:)
+    msg.gsub(/(\\\w|\s)/, '')
   end
 
   # Call chat bot API
