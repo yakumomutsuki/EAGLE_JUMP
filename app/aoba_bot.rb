@@ -30,6 +30,11 @@ EM.run do
     puts '------------------'
 
     if data['type'] == 'message' && data['message'].nil?
+      if /バルス/.match?(data['text'])
+        EM.stop
+        ws = nil
+      end
+
       @obj = CreateReplySentence.new
       reply = @obj.reply(word: data['text'])
       if reply
@@ -38,14 +43,6 @@ EM.run do
           text:  reply.to_s,
           channel: data['channel']
         }.to_json)
-      end
-    end
-
-    if data['text'] =~ /バルス/
-      ws.on :close do
-        p [:close, event.code]
-        ws = nil
-        EM.stop
       end
     end
   end
