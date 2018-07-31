@@ -4,8 +4,8 @@
 
 ## 環境変数
 当スクリプトには、以下の環境変数の設定が必要です。
-- ENV['SLACK_API_TOKEN']    SlackのAPIキーを設定
-- ENV['USER_LOCAL_API_KEY'] UserLocalというサービスで使用するAPIキーを設定
+- SLACK_API_TOKEN    SlackのAPIキーを設定
+- USER_LOCAL_API_KEY UserLocalというサービスで使用するAPIキーを設定
 
 ## 動かす
 以下のコマンドを入力
