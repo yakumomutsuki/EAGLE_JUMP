@@ -1,4 +1,2 @@
 # shellを実行します
-cd app
-bundle exec ruby aoba_bot.rb
-pwd
+bundle exec ruby app/aoba_bot.rb

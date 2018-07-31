@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'minitest/autorun'
-require './app/create_reply_sentence.rb'
+require './app/create_reply_sentence'
 
 class CreateReplySentencesTest < MiniTest::Test
   # Called before every test method runs. Can be used

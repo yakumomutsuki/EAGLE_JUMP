@@ -1,56 +1,49 @@
+# frozen_string_literal: true
+
 # This Slack Bot is a Simulated by Suzukaze Aoba (Animation of "NEW GAME!!")
 # Kyoumo Ichinichi Ganbaru Zoi!
-require 'http'
-require 'json'
-require 'eventmachine'
-require 'faye/websocket'
-require './create_reply_sentence'
+require 'slack-ruby-client'
+require './app/create_reply_sentence'
 
-response = HTTP.post('https://slack.com/api/rtm.start', params: {
-                       token: ENV['SLACK_API_TOKEN']
-                     })
+Slack.configure do |config|
+  config.token = ENV['SLACK_API_TOKEN']
+  config.logger = Logger.new(STDOUT)
+  config.logger.level = Logger::INFO
+  fail 'Missing ENV[SLACK_API_TOKEN]!' unless config.token
+end
 
-rc = JSON.parse(response.body)
+Slack::RealTime::Client.config do |config|
+  config.websocket_ping = 30
+end
 
-url = rc['url']
+client = Slack::RealTime::Client.new
 
-EM.run do
-  # Raise Web Socket
-  ws = Faye::WebSocket::Client.new(url)
+client.on :hello do
+  puts "Successfully connected, welcome '#{client.self.name}' to the '#{client.team.name}' team at https://#{client.team.domain}.slack.com."
+end
 
-  # When Connection is succeed
-  ws.on :open do
-    p [:open]
-  end
+client.on :message do |data|
+  puts data
 
-  ws.on :message do |event|
-    data = JSON.parse(event.data)
-
-    puts data
-    puts '------------------'
-
-    if data['type'] == 'message' && data['message'].nil?
-      if /バルス/.match?(data['text'])
-        EM.stop
-        ws = nil
-      end
-
-      @obj = CreateReplySentence.new
-      reply = @obj.reply(word: data['text'])
-      if reply
-        ws.send({
-          type: 'message',
-          text:  reply.to_s,
-          channel: data['channel']
-        }.to_json)
-      end
-    end
-  end
-
-  # When Connection is closed
-  ws.on :close do
-    p [:close, event.code]
-    ws = nil
-    EM.stop
+  case data.text
+  when /^バルス/ then
+    client.message channel: data.channel, text: "バルス！！"
+    client.stop!
+  else
+    @obj = CreateReplySentence.new
+    reply = @obj.reply(word: data['text'])
+    client.message channel: data.channel, text: reply
   end
 end
+
+client.on :channel_joined do |_data|
+  puts 'Joined Channel'
+end
+
+client.on :close do |_data|
+  puts 'Connection closing, exiting.'
+  puts 'Connection has been disconnected.'
+  # client.start!
+end
+
+client.start!

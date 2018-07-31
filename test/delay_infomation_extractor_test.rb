@@ -1,5 +1,5 @@
 require 'minitest/autorun'
-require './app/delay_infomation_extractor.rb'
+require './app/delay_infomation_extractor'
 
 # Unit-Test
 class TestDelayInfomationExtractor < MiniTest::Test
