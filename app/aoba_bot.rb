@@ -27,7 +27,7 @@ client.on :message do |data|
 
   case data.text
   when /^バルス/ then
-    client.message channel: data.channel, text: "バルス！！"
+    client.message channel: data.channel, text: "おやすみなさい"
     client.stop!
   else
     @obj = CreateReplySentence.new
